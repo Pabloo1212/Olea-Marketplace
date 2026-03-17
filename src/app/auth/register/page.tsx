@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const getSupabase = () => createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,7 +37,7 @@ export default function RegisterPage() {
     try {
       const supabase = getSupabase();
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -51,7 +52,13 @@ export default function RegisterPage() {
       
       if (error) throw error;
       
-      window.location.href = '/';
+      // If session exists, user is auto-confirmed → redirect
+      if (data.session) {
+        window.location.href = '/';
+      } else {
+        // Email confirmation required → show success message
+        setSuccess(true);
+      }
     } catch (err: any) {
       setError(err.message || 'Error creating account.');
       setIsLoading(false);
@@ -75,6 +82,23 @@ export default function RegisterPage() {
 
           <h1 className="font-sans text-3xl font-bold text-olive-900 mb-2 tracking-tight">{t('auth.createAccount')}</h1>
           <p className="text-olive-500 mb-8">{t('auth.createSubtitle')}</p>
+
+          {/* Success screen after registration */}
+          {success ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-full bg-olive-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-olive-600" />
+              </div>
+              <h2 className="font-sans text-2xl font-bold text-olive-900 mb-2">{t('auth.checkEmail')}</h2>
+              <p className="text-olive-600 text-sm mb-6">
+                {t('auth.resetSent')} <strong>{email}</strong>.
+              </p>
+              <Link href="/auth/login" className="btn-primary">
+                {t('auth.returnToSignIn')}
+              </Link>
+            </div>
+          ) : (
+          <>
 
           {/* Step indicator for producers */}
           {role === 'producer' && (
@@ -202,6 +226,9 @@ export default function RegisterPage() {
                 </button>
               </div>
             </form>
+          )}
+
+          </>
           )}
 
           <p className="text-center text-sm text-olive-600 mt-8">

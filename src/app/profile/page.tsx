@@ -25,6 +25,7 @@ export default function ProfilePage() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('orders');
   const [editing, setEditing] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState({
     name: mockUser.name,
     email: mockUser.email,
@@ -44,8 +45,15 @@ export default function ProfilePage() {
     window.location.href = '/';
   };
 
-  const handleComingSoon = () => {
-    alert(t('profile.comingSoon'));
+  const handleSave = () => {
+    setSaved(true);
+    setEditing(false);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleEditProfile = () => {
+    setActiveTab('settings');
+    setEditing(true);
   };
 
   const tabs = [
@@ -82,7 +90,7 @@ export default function ProfilePage() {
                     </span>
                   </div>
                 </div>
-                <button onClick={() => setEditing(!editing)}
+                <button onClick={handleEditProfile}
                   className="btn-secondary py-2 px-4 text-sm hidden sm:flex">
                   <Edit className="w-4 h-4" /> {t('profile.editProfile')}
                 </button>
@@ -236,28 +244,45 @@ export default function ProfilePage() {
                   <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.fullName')}</label>
                   <input type="text" value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="input-field" />
+                    readOnly={!editing}
+                    className={`input-field ${!editing ? 'bg-olive-50 cursor-not-allowed' : ''}`} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.email')}</label>
                   <input type="email" value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="input-field" />
+                    readOnly={!editing}
+                    className={`input-field ${!editing ? 'bg-olive-50 cursor-not-allowed' : ''}`} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.city')}</label>
                   <input type="text" value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="input-field" />
+                    readOnly={!editing}
+                    className={`input-field ${!editing ? 'bg-olive-50 cursor-not-allowed' : ''}`} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.country')}</label>
                   <input type="text" value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                    className="input-field" />
+                    readOnly={!editing}
+                    className={`input-field ${!editing ? 'bg-olive-50 cursor-not-allowed' : ''}`} />
                 </div>
               </div>
-              <button onClick={handleComingSoon} className="btn-primary mt-5 py-2.5 text-sm">{t('profile.saveChanges')}</button>
+              {editing ? (
+                <button onClick={handleSave} className="btn-primary mt-5 py-2.5 text-sm">
+                  {t('profile.saveChanges')}
+                </button>
+              ) : (
+                <button onClick={() => setEditing(true)} className="btn-secondary mt-5 py-2.5 text-sm">
+                  <Edit className="w-4 h-4" /> {t('profile.editProfile')}
+                </button>
+              )}
+              {saved && (
+                <div className="mt-3 py-2 px-4 bg-olive-100 text-olive-700 text-sm rounded-xl inline-flex items-center gap-2">
+                  ✓ {t('profile.saveChanges')}
+                </div>
+              )}
             </div>
 
             <div className="card p-6">
@@ -286,14 +311,14 @@ export default function ProfilePage() {
                 <ShieldCheck className="w-5 h-5 text-olive-500" /> {t('profile.security')}
               </h3>
               <div className="space-y-3">
-                <button onClick={handleComingSoon} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
+                <button onClick={() => alert(t('profile.comingSoon'))} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
                   <CreditCard className="w-5 h-5 text-olive-400" />
                   <div>
                     <p className="text-sm font-medium text-olive-900">{t('profile.paymentMethods')}</p>
                     <p className="text-xs text-olive-500">{t('profile.manageCards')}</p>
                   </div>
                 </button>
-                <button onClick={handleComingSoon} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
+                <button onClick={() => alert(t('profile.comingSoon'))} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
                   <Settings className="w-5 h-5 text-olive-400" />
                   <div>
                     <p className="text-sm font-medium text-olive-900">{t('profile.changePassword')}</p>

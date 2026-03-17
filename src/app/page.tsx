@@ -66,7 +66,7 @@ function ProductCard({ product }: { product: typeof mockProducts[0] }) {
         </div>
 
         {/* Quick actions */}
-        <div className={`absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+        <div className="absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300">
           <button 
             onClick={(e) => { e.preventDefault(); toggleFavorite(product); }}
             className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center hover:bg-white transition-colors"
