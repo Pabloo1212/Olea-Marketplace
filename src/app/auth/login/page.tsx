@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
@@ -11,15 +12,44 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const getSupabase = () => createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    // Mock login – will be replaced with Supabase auth
-    setTimeout(() => {
-      setError('Demo mode: Authentication will be connected to Supabase.');
+    
+    try {
+      const supabase = getSupabase();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      window.location.href = '/';
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in');
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const supabase = getSupabase();
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}`,
+        },
+      });
+    } catch (err: any) {
+      setError(err.message || 'Failed to initialize Google login');
+    }
   };
 
   return (
@@ -110,7 +140,11 @@ export default function LoginPage() {
           </div>
 
           {/* Social Login */}
-          <button className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-olive-200 rounded-xl text-sm font-medium text-olive-800 hover:bg-olive-50 transition-colors mb-3">
+          <button 
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-olive-200 rounded-xl text-sm font-medium text-olive-800 hover:bg-olive-50 transition-colors mb-3"
+          >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />

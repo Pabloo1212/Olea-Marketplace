@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowRight, Check } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -16,7 +17,12 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const getSupabase = () => createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step === 1 && role === 'producer') {
       setStep(2);
@@ -24,10 +30,30 @@ export default function RegisterPage() {
     }
     setIsLoading(true);
     setError('');
-    setTimeout(() => {
-      setError('Demo mode: Registration will be connected to Supabase.');
+
+    try {
+      const supabase = getSupabase();
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            role: role,
+            company_name: companyName,
+            country: country,
+          }
+        }
+      });
+      
+      if (error) throw error;
+      
+      window.location.href = '/';
+    } catch (err: any) {
+      setError(err.message || 'Error creating account.');
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
