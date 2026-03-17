@@ -39,6 +39,20 @@ export default function ProfilePage() {
 
   const userOrders = mockOrders.slice(0, 5);
 
+  const handleLogout = async () => {
+    const { createBrowserClient } = await import('@supabase/ssr');
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
+
+  const handleComingSoon = () => {
+    alert("Función disponible en la próxima versión completa interactiva.");
+  };
+
   return (
     <div className="min-h-screen bg-cream-gradient">
       <div className="section-padding page-padding">
@@ -244,7 +258,7 @@ export default function ProfilePage() {
                     className="input-field" />
                 </div>
               </div>
-              <button className="btn-primary mt-5 py-2.5 text-sm">Save Changes</button>
+              <button onClick={handleComingSoon} className="btn-primary mt-5 py-2.5 text-sm">Save Changes</button>
             </div>
 
             <div className="card p-6">
@@ -273,21 +287,21 @@ export default function ProfilePage() {
                 <ShieldCheck className="w-5 h-5 text-olive-500" /> Security
               </h3>
               <div className="space-y-3">
-                <button className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
+                <button onClick={handleComingSoon} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
                   <CreditCard className="w-5 h-5 text-olive-400" />
                   <div>
                     <p className="text-sm font-medium text-olive-900">Payment Methods</p>
                     <p className="text-xs text-olive-500">Manage your saved cards</p>
                   </div>
                 </button>
-                <button className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
+                <button onClick={handleComingSoon} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
                   <Settings className="w-5 h-5 text-olive-400" />
                   <div>
                     <p className="text-sm font-medium text-olive-900">Change Password</p>
                     <p className="text-xs text-olive-500">Update your password</p>
                   </div>
                 </button>
-                <button className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-red-50 text-red-600 transition-colors">
+                <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-red-50 text-red-600 transition-colors">
                   <LogOut className="w-5 h-5" />
                   <div>
                     <p className="text-sm font-medium">Sign Out</p>

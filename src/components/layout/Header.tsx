@@ -228,7 +228,7 @@ export default function Header() {
                       <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
                         <User className="w-4 h-4" /> {t('nav.profile')}
                       </Link>
-                      <Link href="/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
+                      <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
                         <Package className="w-4 h-4" /> {t('nav.orders')}
                       </Link>
                       <Link href="/favorites" className="flex items-center justify-between px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
