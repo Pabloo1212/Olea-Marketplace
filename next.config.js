@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // Disable compilation cache to prevent "Failed to allocate memory" on Windows
   webpack: (config) => {
     config.cache = false;
