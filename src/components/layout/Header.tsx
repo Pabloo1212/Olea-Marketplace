@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoritesStore } from '@/stores/favoritesStore';
 import { useTranslation, useI18nStore, localeLabels, localeFlags, type Locale } from '@/stores/i18nStore';
@@ -24,8 +25,8 @@ import {
 const ALL_LOCALES: Locale[] = ['es', 'en', 'it', 'de'];
 
 export default function Header() {
-  const { t } = useTranslation();
-  const { locale, setLocale } = useI18nStore();
+  const { t, locale } = useTranslation();
+  const setLocale = useI18nStore((s) => s.setLocale);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -38,8 +39,46 @@ export default function Header() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const langMenuRef = useRef<HTMLDivElement>(null);
 
-  const [isLoggedIn] = useState(false);
-  const [userRole] = useState<'customer' | 'producer' | 'admin'>('customer');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<'customer' | 'producer' | 'admin'>('customer');
+  const [mounted, setMounted] = useState(false);
+
+  const handleLogout = async () => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    setMounted(true);
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setIsLoggedIn(true);
+        setUserRole(session.user.user_metadata?.role || 'customer');
+      }
+    };
+    checkUser();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsLoggedIn(true);
+        setUserRole(session.user.user_metadata?.role || 'customer');
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -153,7 +192,7 @@ export default function Header() {
               aria-label={t('nav.cart')}
             >
               <ShoppingCart className="w-[18px] h-[18px]" />
-              {itemCount > 0 && (
+              {mounted && itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-forest-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-scale-in">
                   {itemCount}
                 </span>
@@ -173,7 +212,9 @@ export default function Header() {
 
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl shadow-olive-900/10 border border-olive-100 py-2 animate-scale-in">
-                  {!isLoggedIn ? (
+                  {!mounted ? (
+                    <div className="px-4 py-3 text-sm text-olive-400 animate-pulse">Cargando...</div>
+                  ) : !isLoggedIn ? (
                     <>
                       <Link href="/auth/login" className="flex items-center gap-3 px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
                         <LogIn className="w-4 h-4" /> {t('nav.login')}
@@ -194,7 +235,7 @@ export default function Header() {
                         <div className="flex items-center gap-3">
                           <Heart className="w-4 h-4" /> {t('nav.favorites')}
                         </div>
-                        {favoritesItems.length > 0 && (
+                        {mounted && favoritesItems.length > 0 && (
                           <span className="bg-forest-100 text-forest-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
                             {favoritesItems.length}
                           </span>
@@ -209,7 +250,7 @@ export default function Header() {
                         </>
                       )}
                       <div className="border-t border-olive-100 my-1" />
-                      <button className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors w-full">
+                      <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors w-full">
                         <LogOut className="w-4 h-4" /> {t('nav.logout')}
                       </button>
                     </>
@@ -218,9 +259,13 @@ export default function Header() {
               )}
             </div>
 
-            <Link href="/auth/login" className="hidden lg:inline-flex btn-primary py-2 px-5 text-sm">
-              {t('nav.createAccount')}
-            </Link>
+            {!mounted ? (
+              <div className="hidden lg:inline-flex w-28 h-9 rounded-lg bg-olive-100 animate-pulse" />
+            ) : !isLoggedIn ? (
+              <Link href="/auth/login" className="hidden lg:inline-flex btn-primary py-2 px-5 text-sm">
+                {t('nav.createAccount')}
+              </Link>
+            ) : null}
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
