@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
+import { useTranslation } from '@/stores/i18nStore';
 import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowRight, Check } from 'lucide-react';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<'customer' | 'producer'>('customer');
   const [name, setName] = useState('');
@@ -71,8 +73,8 @@ export default function RegisterPage() {
             <span className="font-sans font-bold text-xl text-olive-900 tracking-tight">OliveMarket</span>
           </Link>
 
-          <h1 className="font-sans text-3xl font-bold text-olive-900 mb-2 tracking-tight">Create your account</h1>
-          <p className="text-olive-500 mb-8">Join the professional olive oil sourcing platform</p>
+          <h1 className="font-sans text-3xl font-bold text-olive-900 mb-2 tracking-tight">{t('auth.createAccount')}</h1>
+          <p className="text-olive-500 mb-8">{t('auth.createSubtitle')}</p>
 
           {/* Step indicator for producers */}
           {role === 'producer' && (
@@ -85,7 +87,7 @@ export default function RegisterPage() {
                     {s < step ? <Check className="w-4 h-4" /> : s}
                   </div>
                   <span className={`text-xs font-medium ${s <= step ? 'text-olive-800' : 'text-olive-400'}`}>
-                    {s === 1 ? 'Account' : 'Business'}
+                    {s === 1 ? t('auth.signUp') : t('auth.producer')}
                   </span>
                   {s < 2 && <div className={`w-8 h-0.5 ${s < step ? 'bg-olive-600' : 'bg-olive-200'}`} />}
                 </div>
@@ -104,8 +106,8 @@ export default function RegisterPage() {
               {/* Role selection */}
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {[
-                  { value: 'customer' as const, icon: User, label: 'Buyer', desc: 'Source premium oils' },
-                  { value: 'producer' as const, icon: Building2, label: 'Supplier', desc: 'Sell your products' },
+                  { value: 'customer' as const, icon: User, label: t('auth.customer'), desc: t('auth.customerDesc') },
+                  { value: 'producer' as const, icon: Building2, label: t('auth.producer'), desc: t('auth.producerDesc') },
                 ].map(({ value, icon: Icon, label, desc }) => (
                   <button
                     key={value}
@@ -125,15 +127,15 @@ export default function RegisterPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1.5">Full Name</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1.5">{t('auth.name')}</label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-olive-400" />
                     <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                      placeholder="Your full name" className="input-field pl-10" required />
+                      placeholder={t('auth.name')} className="input-field pl-10" required />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1.5">{t('auth.email')}</label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-olive-400" />
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
@@ -141,11 +143,11 @@ export default function RegisterPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1.5">Password</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1.5">{t('auth.password')}</label>
                   <div className="relative">
                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-olive-400" />
                     <input type={showPassword ? 'text' : 'password'} value={password}
-                      onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters"
+                      onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
                       className="input-field pl-10 pr-10" required minLength={8} />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-olive-400 hover:text-olive-600 transition-colors">
@@ -158,7 +160,7 @@ export default function RegisterPage() {
                   {isLoading ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <>{role === 'producer' ? 'Next: Business Info' : 'Create Account'} <ArrowRight className="w-4 h-4" /></>
+                    <>{t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </form>
@@ -168,17 +170,17 @@ export default function RegisterPage() {
           {step === 2 && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-olive-800 mb-1.5">Company Name</label>
+                <label className="block text-sm font-medium text-olive-800 mb-1.5">{t('auth.producer')}</label>
                 <div className="relative">
                   <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-olive-400" />
                   <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Your olive oil company" className="input-field pl-10" required />
+                    placeholder={t('auth.producerDesc')} className="input-field pl-10" required />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-olive-800 mb-1.5">Country</label>
+                <label className="block text-sm font-medium text-olive-800 mb-1.5">{t('checkout.country')}</label>
                 <select value={country} onChange={(e) => setCountry(e.target.value)} className="input-field" required>
-                  <option value="">Select country</option>
+                  <option value="">{t('checkout.selectCountry')}</option>
                   <option value="España">España</option>
                   <option value="Italia">Italia</option>
                   <option value="Greece">Greece</option>
@@ -189,13 +191,13 @@ export default function RegisterPage() {
 
               <div className="flex gap-3">
                 <button type="button" onClick={() => setStep(1)} className="btn-secondary flex-1 py-3">
-                  Back
+                  ←
                 </button>
                 <button type="submit" disabled={isLoading} className="btn-primary flex-1 py-3">
                   {isLoading ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <>Create Account <ArrowRight className="w-4 h-4" /></>
+                    <>{t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </div>
@@ -203,9 +205,9 @@ export default function RegisterPage() {
           )}
 
           <p className="text-center text-sm text-olive-600 mt-8">
-            Already have an account?{' '}
+            {t('auth.hasAccount')}{' '}
             <Link href="/auth/login" className="text-olive-800 font-semibold hover:underline">
-              Sign in
+              {t('auth.signInLink')}
             </Link>
           </p>
         </div>
@@ -221,9 +223,9 @@ export default function RegisterPage() {
               <path d="M20 14v12M16 18l4-4 4 4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h2 className="font-sans text-3xl font-bold text-white mb-4 tracking-tight">Source or supply premium olive oil</h2>
+          <h2 className="font-sans text-3xl font-bold text-white mb-4 tracking-tight">{t('auth.tagline')}</h2>
           <p className="text-olive-300 leading-relaxed">
-            Whether you&apos;re looking to procure bulk EVOO or list your production, OliveMarket connects buyers and suppliers directly.
+            {t('auth.createSubtitle')}
           </p>
         </div>
         <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-olive-700/20 blur-3xl" />

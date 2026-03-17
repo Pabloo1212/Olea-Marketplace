@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from '@/stores/i18nStore';
 import { mockOrders } from '@/lib/data/mock-data';
 import { formatPrice, formatDateShort, getOrderStatusColor, getInitials } from '@/lib/utils/helpers';
 import {
@@ -17,17 +18,11 @@ const mockUser = {
   city: 'Jaén',
   created_at: '2024-06-15T10:00:00Z',
   role: 'customer',
-  points: 1250, // Added for gamification
+  points: 1250,
 };
 
-const tabs = [
-  { id: 'orders', label: 'My Orders', icon: Package },
-  { id: 'olive-club', label: 'The Olive Club', icon: Award },
-  { id: 'wishlist', label: 'Wishlist', icon: Heart },
-  { id: 'settings', label: 'Settings', icon: Settings },
-];
-
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('orders');
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -50,8 +45,15 @@ export default function ProfilePage() {
   };
 
   const handleComingSoon = () => {
-    alert("Función disponible en la próxima versión completa interactiva.");
+    alert(t('profile.comingSoon'));
   };
+
+  const tabs = [
+    { id: 'orders', label: t('profile.myOrders'), icon: Package },
+    { id: 'olive-club', label: t('profile.oliveClub'), icon: Award },
+    { id: 'wishlist', label: t('profile.wishlist'), icon: Heart },
+    { id: 'settings', label: t('profile.settings'), icon: Settings },
+  ];
 
   return (
     <div className="min-h-screen bg-cream-gradient">
@@ -76,13 +78,13 @@ export default function ProfilePage() {
                       <MapPin className="w-4 h-4 text-olive-400" /> {mockUser.city}, {mockUser.country}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4 text-olive-400" /> Member since {formatDateShort(mockUser.created_at)}
+                      <Calendar className="w-4 h-4 text-olive-400" /> {t('profile.memberSince')} {formatDateShort(mockUser.created_at)}
                     </span>
                   </div>
                 </div>
                 <button onClick={() => setEditing(!editing)}
                   className="btn-secondary py-2 px-4 text-sm hidden sm:flex">
-                  <Edit className="w-4 h-4" /> Edit Profile
+                  <Edit className="w-4 h-4" /> {t('profile.editProfile')}
                 </button>
               </div>
             </div>
@@ -107,18 +109,18 @@ export default function ProfilePage() {
         {activeTab === 'orders' && (
           <div className="card overflow-hidden">
             <div className="p-5 border-b border-olive-100">
-              <h2 className="font-sans text-lg font-bold text-olive-900">Order History</h2>
+              <h2 className="font-sans text-lg font-bold text-olive-900">{t('profile.orderHistory')}</h2>
             </div>
             {userOrders.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-olive-100">
-                      <th className="text-left py-3 px-5 text-olive-500 font-medium">Order</th>
-                      <th className="text-left py-3 px-5 text-olive-500 font-medium">Date</th>
-                      <th className="text-left py-3 px-5 text-olive-500 font-medium">Items</th>
-                      <th className="text-left py-3 px-5 text-olive-500 font-medium">Total</th>
-                      <th className="text-left py-3 px-5 text-olive-500 font-medium">Status</th>
+                      <th className="text-left py-3 px-5 text-olive-500 font-medium">{t('profile.order')}</th>
+                      <th className="text-left py-3 px-5 text-olive-500 font-medium">{t('profile.date')}</th>
+                      <th className="text-left py-3 px-5 text-olive-500 font-medium">{t('profile.items')}</th>
+                      <th className="text-left py-3 px-5 text-olive-500 font-medium">{t('profile.total')}</th>
+                      <th className="text-left py-3 px-5 text-olive-500 font-medium">{t('profile.status')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -126,7 +128,7 @@ export default function ProfilePage() {
                       <tr key={order.id} className="border-b border-olive-50 hover:bg-olive-50/50 transition-colors">
                         <td className="py-3 px-5 font-medium text-olive-900">#{order.id.slice(-3)}</td>
                         <td className="py-3 px-5 text-olive-500">{formatDateShort(order.created_at)}</td>
-                        <td className="py-3 px-5 text-olive-700">{order.items?.length || 0} items</td>
+                        <td className="py-3 px-5 text-olive-700">{order.items?.length || 0} {t('profile.items').toLowerCase()}</td>
                         <td className="py-3 px-5 font-semibold text-olive-900">{formatPrice(order.total_price)}</td>
                         <td className="py-3 px-5">
                           <span className={`${getOrderStatusColor(order.status)} badge capitalize`}>
@@ -141,8 +143,8 @@ export default function ProfilePage() {
             ) : (
               <div className="p-8 text-center text-olive-500">
                 <Package className="w-10 h-10 mx-auto mb-3 text-olive-300" />
-                <p>No orders yet</p>
-                <Link href="/products" className="btn-primary mt-4 inline-flex">Browse Products</Link>
+                <p>{t('profile.noOrders')}</p>
+                <Link href="/products" className="btn-primary mt-4 inline-flex">{t('profile.browseProducts')}</Link>
               </div>
             )}
           </div>
@@ -158,16 +160,16 @@ export default function ProfilePage() {
               <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-8">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-gold-300 text-xs font-bold tracking-widest uppercase mb-4 backdrop-blur-sm border border-white/5">
-                    <Award className="w-3.5 h-3.5" /> The Olive Club
+                    <Award className="w-3.5 h-3.5" /> {t('profile.oliveClub')}
                   </div>
-                  <h3 className="font-serif text-3xl font-bold mb-2">Nivel: Experto</h3>
+                  <h3 className="font-serif text-3xl font-bold mb-2">{t('profile.level')}: {t('profile.expert')}</h3>
                   <p className="text-olive-200 text-sm max-w-sm">
-                    Estás a 750 puntos de alcanzar el nivel <span className="text-gold-400 font-semibold">Sommelier Master</span>.
+                    {t('profile.pointsToNext', { points: '750' })} <span className="text-gold-400 font-semibold">{t('profile.sommelierMaster')}</span>.
                   </p>
                 </div>
                 
                 <div className="text-center bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 min-w-[200px]">
-                  <div className="text-sm text-gold-200 font-medium uppercase tracking-widest mb-1">Tus Puntos</div>
+                  <div className="text-sm text-gold-200 font-medium uppercase tracking-widest mb-1">{t('profile.yourPoints')}</div>
                   <div className="text-5xl font-serif font-bold text-white mb-2">{mockUser.points}</div>
                   <div className="w-full bg-olive-950/50 rounded-full h-2 mb-2 overflow-hidden">
                     <div className="bg-gradient-to-r from-gold-600 to-gold-400 h-2 rounded-full" style={{ width: '62.5%' }}></div>
@@ -180,35 +182,32 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <h4 className="font-serif text-xl font-bold text-olive-900 mt-8 mb-4">Mis Insignias</h4>
+            <h4 className="font-serif text-xl font-bold text-olive-900 mt-8 mb-4">{t('profile.myBadges')}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Bronze Badge */}
               <div className="bg-white p-6 rounded-2xl border border-olive-100 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#CD7F32] to-[#8c5622] flex items-center justify-center shadow-lg shadow-[#CD7F32]/20 mb-4 border-2 border-white ring-2 ring-[#CD7F32]/30">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
-                <h5 className="font-bold text-olive-900 mb-1">Descubridor de Umbría</h5>
-                <p className="text-xs text-olive-500">Adquiriste un aceite exclusivo de la región en preventa.</p>
+                <h5 className="font-bold text-olive-900 mb-1">{t('profile.umbriaBadge')}</h5>
+                <p className="text-xs text-olive-500">{t('profile.umbriaDesc')}</p>
               </div>
 
-              {/* Silver Badge */}
               <div className="bg-white p-6 rounded-2xl border border-olive-100 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow opacity-100">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E2E8F0] to-[#94A3B8] flex items-center justify-center shadow-lg shadow-slate-400/20 mb-4 border-2 border-white ring-2 ring-slate-300">
                   <Calendar className="w-8 h-8 text-slate-700" />
                 </div>
-                <h5 className="font-bold text-olive-900 mb-1">Primer Día de Cosecha</h5>
-                <p className="text-xs text-olive-500">Compraste un AOVE de primera molienda en 2023.</p>
+                <h5 className="font-bold text-olive-900 mb-1">{t('profile.harvestBadge')}</h5>
+                <p className="text-xs text-olive-500">{t('profile.harvestDesc')}</p>
               </div>
 
-              {/* Gold Badge (Locked) */}
               <div className="bg-olive-50 p-6 rounded-2xl border border-dashed border-olive-200 flex flex-col items-center text-center opacity-70">
                 <div className="w-16 h-16 rounded-full bg-olive-100 flex items-center justify-center mb-4">
                   <Award className="w-8 h-8 text-olive-300" />
                 </div>
-                <h5 className="font-bold text-olive-500 mb-1">Sommelier Master</h5>
-                <p className="text-xs text-olive-400">Desbloquea llegando a 2000 puntos en catas y compras.</p>
+                <h5 className="font-bold text-olive-500 mb-1">{t('profile.sommelierMaster')}</h5>
+                <p className="text-xs text-olive-400">{t('profile.lockedBadge')}</p>
                 <button className="mt-4 text-xs font-bold text-gold-600 hover:text-gold-700 uppercase tracking-widest">
-                  Ver cómo lograrlo
+                  {t('profile.seeHow')}
                 </button>
               </div>
             </div>
@@ -219,9 +218,9 @@ export default function ProfilePage() {
         {activeTab === 'wishlist' && (
           <div className="card p-8 text-center">
             <Heart className="w-12 h-12 mx-auto mb-4 text-olive-300" />
-            <h3 className="font-sans text-lg font-bold text-olive-900 mb-2">Your Wishlist</h3>
-            <p className="text-olive-600 text-sm mb-4">Save your favorite olive oils here for easy access.</p>
-            <Link href="/products" className="btn-primary inline-flex">Explore Products</Link>
+            <h3 className="font-sans text-lg font-bold text-olive-900 mb-2">{t('profile.yourWishlist')}</h3>
+            <p className="text-olive-600 text-sm mb-4">{t('profile.wishlistDesc')}</p>
+            <Link href="/products" className="btn-primary inline-flex">{t('profile.exploreProducts')}</Link>
           </div>
         )}
 
@@ -230,46 +229,46 @@ export default function ProfilePage() {
           <div className="space-y-6">
             <div className="card p-6">
               <h3 className="font-sans text-lg font-bold text-olive-900 mb-5 flex items-center gap-2">
-                <User className="w-5 h-5 text-olive-500" /> Personal Information
+                <User className="w-5 h-5 text-olive-500" /> {t('profile.personalInfo')}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1">Full Name</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.fullName')}</label>
                   <input type="text" value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.email')}</label>
                   <input type="email" value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1">City</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.city')}</label>
                   <input type="text" value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-olive-800 mb-1">Country</label>
+                  <label className="block text-sm font-medium text-olive-800 mb-1">{t('profile.country')}</label>
                   <input type="text" value={formData.country}
                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                     className="input-field" />
                 </div>
               </div>
-              <button onClick={handleComingSoon} className="btn-primary mt-5 py-2.5 text-sm">Save Changes</button>
+              <button onClick={handleComingSoon} className="btn-primary mt-5 py-2.5 text-sm">{t('profile.saveChanges')}</button>
             </div>
 
             <div className="card p-6">
               <h3 className="font-sans text-lg font-bold text-olive-900 mb-5 flex items-center gap-2">
-                <Bell className="w-5 h-5 text-olive-500" /> Notifications
+                <Bell className="w-5 h-5 text-olive-500" /> {t('profile.notifications')}
               </h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Order updates', desc: 'Get notified when your order status changes' },
-                  { label: 'New products', desc: 'Get alerts for new olive oils from your favorite producers' },
-                  { label: 'Promotions', desc: 'Receive special offers and seasonal discounts' },
+                  { label: t('profile.orderUpdates'), desc: t('profile.orderUpdatesDesc') },
+                  { label: t('profile.newProducts'), desc: t('profile.newProductsDesc') },
+                  { label: t('profile.promotions'), desc: t('profile.promotionsDesc') },
                 ].map(({ label, desc }) => (
                   <label key={label} className="flex items-center justify-between p-3 rounded-xl hover:bg-olive-50 transition-colors cursor-pointer">
                     <div>
@@ -284,28 +283,28 @@ export default function ProfilePage() {
 
             <div className="card p-6">
               <h3 className="font-sans text-lg font-bold text-olive-900 mb-5 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-olive-500" /> Security
+                <ShieldCheck className="w-5 h-5 text-olive-500" /> {t('profile.security')}
               </h3>
               <div className="space-y-3">
                 <button onClick={handleComingSoon} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
                   <CreditCard className="w-5 h-5 text-olive-400" />
                   <div>
-                    <p className="text-sm font-medium text-olive-900">Payment Methods</p>
-                    <p className="text-xs text-olive-500">Manage your saved cards</p>
+                    <p className="text-sm font-medium text-olive-900">{t('profile.paymentMethods')}</p>
+                    <p className="text-xs text-olive-500">{t('profile.manageCards')}</p>
                   </div>
                 </button>
                 <button onClick={handleComingSoon} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-olive-50 transition-colors">
                   <Settings className="w-5 h-5 text-olive-400" />
                   <div>
-                    <p className="text-sm font-medium text-olive-900">Change Password</p>
-                    <p className="text-xs text-olive-500">Update your password</p>
+                    <p className="text-sm font-medium text-olive-900">{t('profile.changePassword')}</p>
+                    <p className="text-xs text-olive-500">{t('profile.updatePassword')}</p>
                   </div>
                 </button>
                 <button onClick={handleLogout} className="flex items-center gap-3 w-full p-3 rounded-xl text-left hover:bg-red-50 text-red-600 transition-colors">
                   <LogOut className="w-5 h-5" />
                   <div>
-                    <p className="text-sm font-medium">Sign Out</p>
-                    <p className="text-xs text-red-400">Log out of your account</p>
+                    <p className="text-sm font-medium">{t('profile.signOut')}</p>
+                    <p className="text-xs text-red-400">{t('profile.logoutDesc')}</p>
                   </div>
                 </button>
               </div>
