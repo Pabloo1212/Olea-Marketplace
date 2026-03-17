@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
 import { useTranslation } from '@/stores/i18nStore';
-import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowRight, Check } from 'lucide-react';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
