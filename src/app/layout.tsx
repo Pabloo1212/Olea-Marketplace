@@ -3,6 +3,7 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/cart/CartDrawer';
+import { ToastProvider } from '@/components/ui/toast';
 
 export const metadata: Metadata = {
   title: {
@@ -49,12 +50,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="min-h-screen flex flex-col">
-        <Header />
-        <CartDrawer />
-        <main className="flex-1 pt-[calc(4rem+28px)] lg:pt-[calc(5rem+28px)]">
-          {children}
-        </main>
-        <Footer />
+        <ToastProvider>
+          <Header />
+          <CartDrawer />
+          <main className="flex-1 pt-[calc(4rem+28px)] lg:pt-[calc(5rem+28px)]">
+            {children}
+          </main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );

@@ -101,6 +101,7 @@ export default function Header() {
 
   const navLinks = [
     { href: '/', label: t('nav.home') },
+    { href: '/olive-oils', label: 'Olive Oils' },
     { href: '/ranking', label: t('nav.ranking') },
     { href: '/compare', label: t('nav.compare') },
     { href: '/products', label: t('nav.shop') },

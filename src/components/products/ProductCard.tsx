@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useCartStore } from '@/stores/cartStore';
 import { useFavoritesStore } from '@/stores/favoritesStore';
 import { useTranslation } from '@/stores/i18nStore';
+import { useToast } from '@/components/ui/toast';
 import { formatPrice, generateStars } from '@/lib/utils/helpers';
 import { validateProduct } from '@/lib/validation/schemas';
 import {
@@ -23,15 +24,18 @@ interface ProductCardProps {
   className?: string;
   showQuickAdd?: boolean;
   variant?: 'default' | 'compact' | 'featured';
+  onAddToCart?: (product: any, quantity?: number) => void;
 }
 
 function ProductCard({ 
   product, 
   className = '', 
   showQuickAdd = true,
-  variant = 'default' 
+  variant = 'default',
+  onAddToCart
 }: ProductCardProps) {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const addItem = useCartStore((s) => s.addItem);
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const isFavorite = useFavoritesStore((s) => s.isFavorite(product.id));
@@ -79,17 +83,19 @@ function ProductCard({
     
     setIsAddingToCart(true);
     try {
-      addItem(validatedProduct, 1);
-      
-      // Optional: Show success feedback
-      console.log('Product added to cart:', validatedProduct.name);
+      if (onAddToCart) {
+        onAddToCart(validatedProduct, 1);
+      } else {
+        addItem(validatedProduct, 1);
+        showToast('Added to cart!', 'success');
+      }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      // TODO: Show error toast
+      showToast('Failed to add to cart', 'error');
     } finally {
       setIsAddingToCart(false);
     }
-  }, [isAddingToCart, validatedProduct, addItem]);
+  }, [isAddingToCart, validatedProduct, addItem, onAddToCart, showToast]);
 
   const handleToggleFavorite = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -100,13 +106,19 @@ function ProductCard({
     setIsTogglingFavorite(true);
     try {
       toggleFavorite(validatedProduct);
+      // Show success toast
+      if (isFavorite) {
+        showToast('Removed from favorites', 'info');
+      } else {
+        showToast('Added to favorites!', 'success');
+      }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      // TODO: Show error toast
+      showToast('Error updating favorites', 'error');
     } finally {
       setIsTogglingFavorite(false);
     }
-  }, [isTogglingFavorite, validatedProduct, toggleFavorite]);
+  }, [isTogglingFavorite, validatedProduct, toggleFavorite, isFavorite, showToast]);
 
   const getImageUrl = useCallback(() => {
     if (imageError || !validatedProduct.images?.length) {

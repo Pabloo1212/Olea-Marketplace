@@ -201,6 +201,7 @@ export const paginatedResponseSchema = <T>(dataSchema: z.ZodType<T>) => z.object
 // Type exports
 export type Product = z.infer<typeof productSchema>;
 export type NewProduct = z.infer<typeof newProductSchema>;
+export type NewProductData = NewProduct; // Alias for backwards compatibility
 export type Profile = z.infer<typeof profileSchema>;
 export type Producer = z.infer<typeof producerSchema>;
 export type CartItem = z.infer<typeof cartItemSchema>;

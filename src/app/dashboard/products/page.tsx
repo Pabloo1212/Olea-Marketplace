@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { dataManager } from '@/lib/data/manager';
 import { Product } from '@/lib/validation/schemas';
@@ -74,7 +75,7 @@ export default function DashboardProductsPage() {
 
   // Handle product actions
   const handleEditProduct = useCallback((productId: string) => {
-    router.push(`/dashboard/products/${productId}/edit`);
+    router.push('/dashboard/products/edit');
   }, [router]);
 
   const handleViewProduct = useCallback((productId: string) => {
@@ -298,12 +299,14 @@ export default function DashboardProductsPage() {
                           </td>
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg bg-olive-100 flex items-center justify-center overflow-hidden">
+                              <div className="w-12 h-12 rounded-lg bg-olive-100 flex items-center justify-center overflow-hidden relative">
                                 {product.images && product.images.length > 0 ? (
-                                  <img
+                                  <Image
                                     src={product.images[0].image_url}
                                     alt={product.name}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
+                                    sizes="48px"
                                   />
                                 ) : (
                                   <Package className="w-6 h-6 text-olive-400" />
