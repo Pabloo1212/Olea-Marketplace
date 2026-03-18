@@ -83,7 +83,7 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <Link href={`/products/${item.product.slug}`}>
+                      <Link href={`/products/${item.product.id}`}>
                         <h3 className="font-sans text-base font-semibold text-olive-900 hover:text-olive-700 transition-colors line-clamp-2">
                           {item.product.name}
                         </h3>

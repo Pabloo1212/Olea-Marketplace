@@ -339,7 +339,7 @@ export default function ProductsPage() {
                             <span className="text-xs text-olive-500">{product.origin_country} • {product.olive_variety}</span>
                             {product.organic && <span className="badge-organic text-[10px] py-0.5"><Leaf className="w-2.5 h-2.5" /> {t('products.organic')}</span>}
                           </div>
-                          <Link href={`/products/${product.slug}`}>
+                          <Link href={`/products/${product.id}`}>
                             <h3 className="font-sans text-base font-semibold text-olive-900 hover:text-cream-600 transition-colors">
                               {product.name}
                             </h3>
@@ -409,7 +409,7 @@ export default function ProductsPage() {
                           <MapPin className="w-3 h-3 text-olive-400" />
                           <span className="text-xs text-olive-500">{product.origin_country} • {product.olive_variety}</span>
                         </div>
-                        <Link href={`/products/${product.slug}`}>
+                        <Link href={`/products/${product.id}`}>
                           <h3 className="font-sans text-sm font-semibold text-olive-900 group-hover:text-cream-600 transition-colors line-clamp-2 mb-2">
                             {product.name}
                           </h3>

@@ -112,7 +112,7 @@ export default function RankingPage() {
                       <p className="text-xs font-semibold uppercase tracking-wider text-forest-600 mb-1">
                         {product.origin_country} • {product.olive_variety}
                       </p>
-                      <Link href={`/products/${product.slug}`}>
+                      <Link href={`/products/${product.id}`}>
                         <h2 className="font-serif text-2xl font-bold text-olive-950 group-hover:text-forest-700 transition-colors">
                           {product.name}
                         </h2>

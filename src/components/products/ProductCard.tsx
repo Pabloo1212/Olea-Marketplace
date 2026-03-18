@@ -195,7 +195,7 @@ function ProductCard({
     <div className={`card group overflow-hidden relative ${className}`}>
       {/* Image Container */}
       <div className="relative h-60 sm:h-72 overflow-hidden bg-cream-100">
-        <Link href={`/products/${validatedProduct.slug}`}>
+        <Link href={`/products/${validatedProduct.id}`}>
           {imageLoading && (
             <div className="absolute inset-0 bg-olive-100 animate-pulse z-10" />
           )}
@@ -280,7 +280,7 @@ function ProductCard({
         </div>
 
         {/* Product Name */}
-        <Link href={`/products/${validatedProduct.slug}`}>
+        <Link href={`/products/${validatedProduct.id}`}>
           <h3 className="font-serif text-base font-semibold text-olive-900 group-hover:text-forest-700 transition-colors line-clamp-2 mb-2">
             {validatedProduct.name}
           </h3>

@@ -96,7 +96,7 @@ export default function FavoritesPage() {
                       <span className="text-xs text-olive-500">{product.origin_country} · {product.olive_variety}</span>
                     </div>
 
-                    <Link href={`/products/${product.slug}`}>
+                    <Link href={`/products/${product.id}`}>
                       <h3 className="font-serif text-base font-semibold text-olive-900 hover:text-forest-700 transition-colors line-clamp-2 mb-2">
                         {product.name}
                       </h3>
