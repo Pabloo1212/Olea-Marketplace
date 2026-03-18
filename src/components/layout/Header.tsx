@@ -244,7 +244,7 @@ export default function Header() {
                       {(userRole === 'producer' || userRole === 'admin') && (
                         <>
                           <div className="border-t border-olive-100 my-1" />
-                          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
+                          <Link href="/dashboard/producer" className="flex items-center gap-3 px-4 py-2.5 text-sm text-olive-600 hover:bg-olive-50 transition-colors">
                             <LayoutDashboard className="w-4 h-4" /> {t('nav.dashboard')}
                           </Link>
                         </>
