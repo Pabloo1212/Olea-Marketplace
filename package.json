@@ -1,6 +1,7 @@
 {
   "name": "olive-marketplace",
-  "version": "1.0.0",
+  "description": "Olive Marketplace - Premium olive oil e-commerce platform",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
