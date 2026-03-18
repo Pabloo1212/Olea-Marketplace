@@ -175,7 +175,16 @@
     "checkEmail": "Revisa tu correo",
     "resetSent": "Hemos enviado un enlace de restablecimiento a",
     "returnToSignIn": "Volver a Iniciar Sesión",
-    "tagline": "Los mejores aceites de oliva, al alcance de tu mano"
+    "tagline": "Los mejores aceites de oliva, al alcance de tu mano",
+    "authFailed": "Error de autenticación. Inténtalo de nuevo.",
+    "verificationSent": "Te hemos enviado un enlace de verificación a:",
+    "verificationInstructions": "Haz clic en el enlace del correo para activar tu cuenta. Si no lo ves, revisa tu carpeta de spam.",
+    "didntReceiveEmail": "¿No recibiste el correo? Reenviar",
+    "verifyTitle": "Verificar correo electrónico",
+    "verifySubtitle": "Introduce tu correo electrónico para reenviar el enlace de verificación.",
+    "verificationResent": "¡Correo de verificación reenviado! Revisa tu bandeja de entrada.",
+    "resendVerification": "Reenviar verificación",
+    "verificationNote": "Si ya verificaste tu correo, puedes iniciar sesión directamente."
   },
   "subscriptions": {
     "badge": "Club Mensual de Aceite de Oliva",

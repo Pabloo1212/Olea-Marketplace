@@ -175,7 +175,16 @@
     "checkEmail": "Check your email",
     "resetSent": "We've sent a password reset link to",
     "returnToSignIn": "Return to Sign In",
-    "tagline": "The finest olive oils, at your fingertips"
+    "tagline": "The finest olive oils, at your fingertips",
+    "authFailed": "Authentication failed. Please try again.",
+    "verificationSent": "We've sent a verification link to:",
+    "verificationInstructions": "Click the link in the email to activate your account. If you don't see it, check your spam folder.",
+    "didntReceiveEmail": "Didn't receive the email? Resend",
+    "verifyTitle": "Verify your email",
+    "verifySubtitle": "Enter your email address to resend the verification link.",
+    "verificationResent": "Verification email resent! Check your inbox.",
+    "resendVerification": "Resend verification",
+    "verificationNote": "If you've already verified your email, you can sign in directly."
   },
   "subscriptions": {
     "badge": "Monthly Olive Oil Club",

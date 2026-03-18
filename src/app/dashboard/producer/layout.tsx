@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 import { Package, LayoutDashboard, Settings, LogOut, ShoppingBag, Plus } from 'lucide-react';
 
 export default function ProducerDashboardLayout({
@@ -7,6 +10,12 @@ export default function ProducerDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
+
   return (
     <div className="min-h-screen bg-olive-50 font-sans flex flex-col md:flex-row">
       {/* Sidebar */}
@@ -48,7 +57,10 @@ export default function ProducerDashboardLayout({
         </div>
 
         <div className="p-4 border-t border-olive-100">
-          <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors w-full">
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors w-full"
+          >
             <LogOut className="w-5 h-5" />
             Sign Out
           </button>

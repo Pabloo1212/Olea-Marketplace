@@ -262,7 +262,7 @@ export default function Header() {
             {!mounted ? (
               <div className="hidden lg:inline-flex w-28 h-9 rounded-lg bg-olive-100 animate-pulse" />
             ) : !isLoggedIn ? (
-              <Link href="/auth/login" className="hidden lg:inline-flex btn-primary py-2 px-5 text-sm">
+              <Link href="/auth/register" className="hidden lg:inline-flex btn-primary py-2 px-5 text-sm">
                 {t('nav.createAccount')}
               </Link>
             ) : null}
