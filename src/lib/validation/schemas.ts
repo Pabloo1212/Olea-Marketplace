@@ -68,6 +68,8 @@ export const productSchema = z.object({
   images: z.array(productImageSchema).optional(),
 });
 
+export const productArraySchema = z.array(productSchema);
+
 export const newProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200, 'Product name cannot exceed 200 characters'),
   description: z.string().max(2000, 'Description cannot exceed 2000 characters').optional(),
