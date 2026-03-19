@@ -339,11 +339,11 @@ export default function ProductsPage() {
                             <span className="text-xs text-olive-500">{product.origin_country} • {product.olive_variety}</span>
                             {product.organic && <span className="badge-organic text-[10px] py-0.5"><Leaf className="w-2.5 h-2.5" /> {t('products.organic')}</span>}
                           </div>
-                          <Link href={`/products/${product.id}`}>
+                          <div onClick={() => console.log('Product clicked:', product.id)} className="cursor-pointer">
                             <h3 className="font-sans text-base font-semibold text-olive-900 hover:text-cream-600 transition-colors">
                               {product.name}
                             </h3>
-                          </Link>
+                          </div>
                           <p className="text-sm text-olive-600 mt-1 line-clamp-1">{product.short_description}</p>
                           <div className="flex items-center gap-4 mt-2">
                             <div className="flex items-center gap-1">

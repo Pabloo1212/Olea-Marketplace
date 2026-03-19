@@ -195,7 +195,7 @@ function ProductCard({
     <div className={`card group overflow-hidden relative ${className}`}>
       {/* Image Container */}
       <div className="relative h-60 sm:h-72 overflow-hidden bg-cream-100">
-        <Link href={`/products/${validatedProduct.id}`}>
+        <div onClick={() => console.log('Product clicked:', validatedProduct.id)} className="cursor-pointer">
           {imageLoading && (
             <div className="absolute inset-0 bg-olive-100 animate-pulse z-10" />
           )}
@@ -206,10 +206,9 @@ function ProductCard({
             className="object-cover group-hover:scale-105 transition-transform duration-500"
             onLoad={handleImageLoad}
             onError={handleImageError}
-            loading="lazy"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-        </Link>
+        </div>
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
@@ -280,11 +279,11 @@ function ProductCard({
         </div>
 
         {/* Product Name */}
-        <Link href={`/products/${validatedProduct.id}`}>
+        <div onClick={() => console.log('Product clicked:', validatedProduct.id)} className="cursor-pointer">
           <h3 className="font-serif text-base font-semibold text-olive-900 group-hover:text-forest-700 transition-colors line-clamp-2 mb-2">
             {validatedProduct.name}
           </h3>
-        </Link>
+        </div>
 
         {/* Rating */}
         <div className="flex items-center gap-1.5 mb-3">
