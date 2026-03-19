@@ -212,8 +212,12 @@ export default function ProductDetailPage() {
               
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
-                  {stars.map((star, index) => (
-                    <Star key={index} className={`w-4 h-4 ${star.filled ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                  {Array.from({ length: stars.full }).map((_, i) => (
+                    <Star key={`f${i}`} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  ))}
+                  {stars.half && <Star className="w-4 h-4 fill-amber-200 text-amber-400" />}
+                  {Array.from({ length: stars.empty }).map((_, i) => (
+                    <Star key={`e${i}`} className="w-4 h-4 text-gray-300" />
                   ))}
                   <span className="text-sm text-olive-600 ml-1">
                     {product.avg_rating?.toFixed(1) || '0.0'} ({product.review_count || 0} reviews)

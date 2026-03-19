@@ -88,14 +88,18 @@ class SupabaseConfigManager {
 
   getConfig(): SupabaseConfig {
     if (!this.config) {
-      const errorMessages = this.validationErrors.map(e => `${e.field}: ${e.message}`).join('\n');
-      throw new Error(
-        `Supabase configuration is invalid:\n${errorMessages}\n\n` +
-        'Please check your environment variables:\n' +
-        '- NEXT_PUBLIC_SUPABASE_URL\n' +
-        '- NEXT_PUBLIC_SUPABASE_ANON_KEY\n\n' +
-        'Get these values from your Supabase project settings.'
-      );
+      // During build (SSG/SSR), env vars may not be available yet.
+      // Return empty strings to avoid crashing the build — errors will
+      // surface at runtime when actual DB calls are made.
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+      if (!url || !anonKey) {
+        console.warn(
+          '[Supabase] Missing environment variables. ' +
+          'Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.'
+        );
+      }
+      return { url, anonKey };
     }
     return this.config;
   }

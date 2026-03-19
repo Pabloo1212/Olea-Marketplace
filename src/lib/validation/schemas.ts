@@ -66,6 +66,10 @@ export const productSchema = z.object({
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
   images: z.array(productImageSchema).optional(),
+  // Optional extended fields (may exist in DB but not always returned)
+  region: z.string().optional(),
+  tasting_notes: z.string().optional(),
+  storage_instructions: z.string().optional(),
 });
 
 export const productArraySchema = z.array(productSchema);
@@ -166,10 +170,11 @@ export const productFiltersSchema = z.object({
   maxPrice: z.number().max(10000, 'Maximum price cannot exceed €10,000').optional(),
   harvestYear: z.array(z.number().int()).optional(),
   sortBy: z.enum([
-    'created_at_desc', 'created_at_asc',
     'price_asc', 'price_desc',
+    'rating', 'newest', 'name',
+    'created_at_desc', 'created_at_asc',
+    'rating_desc', 'rating_asc',
     'name_asc', 'name_desc',
-    'rating_desc', 'rating_asc'
   ]).optional(),
 });
 
