@@ -16,6 +16,9 @@ interface CartStore extends CartState {
   
   // Getters
   getItemQuantity: (productId: string) => number;
+  getItemCount: () => number;
+  getSubtotal: () => number;
+  getTotal: () => number;
   isInCart: (productId: string) => boolean;
   
   // Internal actions
@@ -133,6 +136,20 @@ export const useCartStore = create<CartStore>()(
       getItemQuantity: (productId: string) => {
         const item = get().items.find(item => item.product_id === productId);
         return item ? item.quantity : 0;
+      },
+
+      getItemCount: () => {
+        return get().items.reduce((total, item) => total + item.quantity, 0);
+      },
+
+      getSubtotal: () => {
+        return get().items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+      },
+
+      getTotal: () => {
+        const subtotal = get().getSubtotal();
+        const shipping = subtotal > 0 ? (subtotal >= 75 ? 0 : 8.50) : 0;
+        return subtotal + shipping;
       },
 
       isInCart: (productId: string) => {
