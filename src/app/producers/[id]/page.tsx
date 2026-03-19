@@ -182,7 +182,7 @@ export default function ProducerProfilePage() {
 
                       {/* Product Info */}
                       <div className="flex-1 flex flex-col justify-center min-w-0">
-                        <Link href={`/products/${product.slug}`}>
+                        <Link href={`/products/${product.id}`}>
                           <h4 className="font-serif text-lg font-bold text-olive-950 group-hover:text-forest-700 transition-colors truncate">
                             {product.name}
                           </h4>

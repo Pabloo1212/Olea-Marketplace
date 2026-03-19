@@ -75,15 +75,11 @@ export default function DashboardProductsPage() {
 
   // Handle product actions
   const handleEditProduct = useCallback((productId: string) => {
-    // TODO: Implement edit functionality
-    console.log('Edit product:', productId);
-    alert('Edit functionality will be implemented soon. Product ID: ' + productId);
+    router.push(`/dashboard/products/${productId}/edit`);
   }, [router]);
 
   const handleViewProduct = useCallback((productId: string) => {
-    // TODO: Implement view functionality
-    console.log('View product:', productId);
-    alert('View functionality will be implemented soon. Product ID: ' + productId);
+    router.push(`/products/${productId}`);
   }, [router]);
 
   const handleDeleteProduct = useCallback(async (productId: string) => {

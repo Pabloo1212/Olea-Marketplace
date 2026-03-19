@@ -140,7 +140,7 @@ function ProductCard({
   if (variant === 'compact') {
     return (
       <div className={`card group overflow-hidden relative ${className}`}>
-        <Link href={`/products/${validatedProduct.slug}`} className="block">
+        <Link href={`/products/${validatedProduct.id}`} className="block">
           <div className="flex gap-3 p-3">
             <div className="w-16 h-16 rounded-lg bg-cream-100 flex-shrink-0 overflow-hidden relative">
               {imageLoading && (

@@ -98,7 +98,7 @@ export default function RankingPage() {
                   <div className="w-16 h-28 rounded-xl bg-gradient-to-b from-olive-400 to-olive-600 shadow-xl group-hover:scale-105 transition-transform duration-500" />
                   
                   {/* View Details Overlay */}
-                  <Link href={`/products/${product.slug}`} className="absolute inset-0 flex items-center justify-center bg-olive-950/0 group-hover:bg-olive-950/10 transition-colors">
+                  <Link href={`/products/${product.id}`} className="absolute inset-0 flex items-center justify-center bg-olive-950/0 group-hover:bg-olive-950/10 transition-colors">
                     <span className="opacity-0 group-hover:opacity-100 btn-secondary bg-white text-xs py-1.5 px-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                       {t('ranking.viewProduct')}
                     </span>

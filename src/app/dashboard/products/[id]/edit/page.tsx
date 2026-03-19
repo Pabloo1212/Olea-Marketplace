@@ -49,7 +49,11 @@ export default function EditProductPage() {
     setError(null);
 
     try {
-      const productData = await dataManager.getProduct(params.id as string);
+      const productData = await dataManager.getProductById(params.id as string);
+      
+      if (!productData) {
+        throw new Error('Product not found');
+      }
       
       // Verify user owns this product
       const producer = await dataManager.getProducerByUserId(user.id);
@@ -58,21 +62,22 @@ export default function EditProductPage() {
       }
 
       setProduct(productData);
+      const pd = productData as any;
       setFormData({
-        name: productData.name,
-        description: productData.description,
-        olive_variety: productData.olive_variety,
-        origin_country: productData.origin_country,
-        region: productData.region,
-        harvest_year: productData.harvest_year,
-        volume_ml: productData.volume_ml,
-        price: productData.price,
-        compare_at_price: productData.compare_at_price || 0,
-        stock: productData.stock,
-        organic: productData.organic,
-        is_published: productData.is_published,
-        tasting_notes: productData.tasting_notes || '',
-        storage_instructions: productData.storage_instructions || '',
+        name: pd.name,
+        description: pd.description,
+        olive_variety: pd.olive_variety,
+        origin_country: pd.origin_country,
+        region: pd.region || pd.origin_region || '',
+        harvest_year: pd.harvest_year,
+        volume_ml: pd.volume_ml,
+        price: pd.price,
+        compare_at_price: pd.compare_at_price || 0,
+        stock: pd.stock,
+        organic: pd.organic,
+        is_published: pd.is_published,
+        tasting_notes: pd.tasting_notes || '',
+        storage_instructions: pd.storage_instructions || '',
       });
     } catch (err) {
       console.error('Error fetching product:', err);
@@ -111,7 +116,7 @@ export default function EditProductPage() {
     setError(null);
 
     try {
-      await dataManager.updateProduct(product.id, formData);
+      await dataManager.updateProduct(product.id, formData as any);
       router.push('/dashboard/products');
     } catch (err) {
       console.error('Error saving product:', err);

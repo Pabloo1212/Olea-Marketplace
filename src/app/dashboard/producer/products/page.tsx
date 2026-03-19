@@ -161,7 +161,7 @@ export default function ProducerProductsPage() {
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Link href={`/products/${product.slug}`} className="p-1.5 text-olive-400 hover:text-olive-900 hover:bg-olive-100 rounded-md transition-colors" title="View in store">
+                        <Link href={`/products/${product.id}`} className="p-1.5 text-olive-400 hover:text-olive-900 hover:bg-olive-100 rounded-md transition-colors" title="View in store">
                           <Eye className="w-4 h-4" />
                         </Link>
                         <button className="p-1.5 text-olive-400 hover:text-olive-900 hover:bg-olive-100 rounded-md transition-colors" title="Edit">
