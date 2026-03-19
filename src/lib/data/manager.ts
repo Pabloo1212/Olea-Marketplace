@@ -120,8 +120,7 @@ class DataManager {
           .select(`
             *,
             producer:producers(*),
-            images:product_images(*),
-            reviews:reviews(*)
+            images:product_images(*)
           `)
           .eq('is_published', true);
 
@@ -211,8 +210,7 @@ class DataManager {
           .select(`
             *,
             producer:producers(*),
-            images:product_images(*),
-            reviews:reviews(*)
+            images:product_images(*)
           `)
           .eq('id', id)
           .single();
@@ -244,8 +242,7 @@ class DataManager {
           .select(`
             *,
             producer:producers(*),
-            images:product_images(*),
-            reviews:reviews(*)
+            images:product_images(*)
           `)
           .eq('slug', slug)
           .single();
@@ -477,8 +474,7 @@ class DataManager {
           .from('products')
           .select(`
             *,
-            images:product_images(*),
-            reviews:reviews(*)
+            images:product_images(*)
           `)
           .eq('producer_id', producerId)
           .order('created_at', { ascending: false });
