@@ -21,6 +21,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isGoogleSignupInit, setIsGoogleSignupInit] = useState(false);
 
   const canSubmitStep1 = name && email && password && isPasswordValid(password) && acceptedTerms;
 
@@ -77,7 +78,26 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignup = async () => {
+    if (!acceptedTerms) {
+      setError('Debes aceptar los Términos y la Política de Privacidad.');
+      return;
+    }
+
+    if (role === 'producer' && step === 1) {
+      setIsGoogleSignupInit(true);
+      setStep(2);
+      return;
+    }
+
     try {
+      // Save user intent to a cookie so the callback route can create the profile correctly
+      const dataToSave = {
+        role,
+        company_name: companyName,
+        country,
+      };
+      document.cookie = `oauth_signup_data=${encodeURIComponent(JSON.stringify(dataToSave))}; path=/; max-age=3600`;
+
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -249,7 +269,7 @@ export default function RegisterPage() {
                   {isLoading ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <>{role === 'producer' ? 'Siguiente' : t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
+                    <>{role === 'producer' ? 'Siguiente paso' : t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </form>
@@ -273,13 +293,25 @@ export default function RegisterPage() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                {t('auth.continueGoogle')}
+                {role === 'producer' ? 'Continuar con Google (Paso 1)' : t('auth.continueGoogle')}
               </button>
             </>
           )}
 
           {step === 2 && (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (isGoogleSignupInit) {
+                handleGoogleSignup();
+              } else {
+                handleSubmit(e);
+              }
+            }} className="space-y-4">
+              {isGoogleSignupInit && (
+                <div className="bg-olive-50 border border-olive-200 text-olive-800 text-sm rounded-xl px-4 py-3 mb-4">
+                  Por favor, rellena los datos de tu empresa antes de terminar el registro con Google.
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-olive-800 mb-1.5">{t('auth.producer')}</label>
                 <div className="relative">
@@ -300,15 +332,15 @@ export default function RegisterPage() {
                 </select>
               </div>
 
-              <div className="flex gap-3">
-                <button type="button" onClick={() => setStep(1)} className="btn-secondary flex-1 py-3">
-                  ←
+              <div className="flex gap-3 mt-6">
+                <button type="button" onClick={() => { setStep(1); setIsGoogleSignupInit(false); }} className="btn-secondary flex-1 py-3">
+                  ← Volver
                 </button>
-                <button type="submit" disabled={isLoading} className="btn-primary flex-1 py-3">
+                <button type="submit" disabled={isLoading || !companyName || !country} className="btn-primary flex-1 py-3">
                   {isLoading ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <>{t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
+                    <>{isGoogleSignupInit ? 'Finalizar con Google' : t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </div>
