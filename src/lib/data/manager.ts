@@ -62,7 +62,7 @@ class DataManager {
     return entry.data;
   }
 
-  private clearCache(pattern?: string): void {
+  public clearCache(pattern?: string): void {
     if (!pattern) {
       this.cache.clear();
       return;

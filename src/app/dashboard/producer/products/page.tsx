@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Plus, Search, Edit, Trash2, Eye, Package, X, Save, AlertTriangle, Loader2 } from 'lucide-react';
 import { formatPrice } from '@/lib/utils/helpers';
 import { createBrowserClient } from '@supabase/ssr';
+import { dataManager } from '@/lib/data/manager';
 
 interface ProductImage {
   id?: string;
@@ -392,6 +393,7 @@ export default function ProducerProductsPage() {
       if (delError) throw delError;
       setProducts(prev => prev.filter(p => p.id !== deleteTarget.id));
       setDeleteTarget(null);
+      dataManager.clearCache('products');
       showSuccess('Producto eliminado correctamente');
     } catch (err: any) {
       setError(err.message);
@@ -420,6 +422,7 @@ export default function ProducerProductsPage() {
       if (updateError) throw updateError;
       setProducts(prev => prev.map(p => p.id === editTarget.id ? { ...p, ...data } : p));
       setEditTarget(null);
+      dataManager.clearCache('products');
       showSuccess('Cambios guardados correctamente');
     } catch (err: any) {
       setError(err.message);

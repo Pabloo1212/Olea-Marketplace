@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Upload, X, Save, Image as ImageIcon } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
+import { dataManager } from '@/lib/data/manager';
 
 export default function NewProductPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,7 +109,10 @@ export default function NewProductPage() {
             .from('products')
             .upload(fileName, file);
 
-          if (uploadError) return null;
+          if (uploadError) {
+            console.error('Image upload failed:', uploadError);
+            throw new Error(`Failed to upload image: ${uploadError.message}. Ensure "products" Storage bucket exists and is public.`);
+          }
 
           const { data: { publicUrl } } = supabase.storage
             .from('products')
@@ -131,10 +135,13 @@ export default function NewProductPage() {
         }
       }
 
+      // Clear the cache so public listing updates immediately
+      dataManager.clearCache('products');
+
       // Redirect back to products list
       window.location.href = '/dashboard/producer/products';
     } catch (error: any) {
-      console.error(error);
+      console.error('Submit error:', error);
       alert(error.message || 'Failed to create product');
       setIsSubmitting(false);
     }
