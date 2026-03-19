@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/stores/i18nStore';
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ShieldAlert } from 'lucide-react';
+
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_SECONDS = 30;
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -16,31 +19,74 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Rate limiting state
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutEnd, setLockoutEnd] = useState<number | null>(null);
+  const [lockoutRemaining, setLockoutRemaining] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Handle error from auth callback redirect
   useEffect(() => {
     const errorParam = searchParams.get('error');
     if (errorParam === 'auth_failed') {
-      setError(t('auth.authFailed') || 'Authentication failed. Please try again.');
+      setError(t('auth.authFailed') || 'Error de autenticación. Inténtalo de nuevo.');
     }
   }, [searchParams, t]);
 
+  // Lockout countdown timer
+  useEffect(() => {
+    if (lockoutEnd) {
+      const tick = () => {
+        const remaining = Math.max(0, Math.ceil((lockoutEnd - Date.now()) / 1000));
+        setLockoutRemaining(remaining);
+        if (remaining <= 0) {
+          setLockoutEnd(null);
+          setFailedAttempts(0);
+          if (timerRef.current) clearInterval(timerRef.current);
+        }
+      };
+      tick();
+      timerRef.current = setInterval(tick, 1000);
+      return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }
+  }, [lockoutEnd]);
+
+  const isLockedOut = lockoutEnd !== null && Date.now() < lockoutEnd;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLockedOut) return;
+
     setIsLoading(true);
     setError('');
-    
+
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
-      if (error) throw error;
-      
+
+      if (error) {
+        // Generic error message — never reveal whether email exists or password is wrong
+        const attempts = failedAttempts + 1;
+        setFailedAttempts(attempts);
+
+        if (attempts >= MAX_ATTEMPTS) {
+          setLockoutEnd(Date.now() + LOCKOUT_SECONDS * 1000);
+          setError(`Demasiados intentos fallidos. Espera ${LOCKOUT_SECONDS} segundos.`);
+        } else {
+          setError('Email o contraseña incorrectos.');
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      // Success — reset attempts
+      setFailedAttempts(0);
       window.location.href = '/';
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+      setError('Ha ocurrido un error. Inténtalo de nuevo.');
       setIsLoading(false);
     }
   };
@@ -56,7 +102,7 @@ export default function LoginPage() {
       });
       if (error) throw error;
     } catch (err: any) {
-      setError(err.message || 'Failed to initialize Google login');
+      setError('No se pudo iniciar sesión con Google.');
     }
   };
 
@@ -79,8 +125,9 @@ export default function LoginPage() {
           <p className="text-olive-500 mb-8">{t('auth.signInSubtitle')}</p>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">
-              {error}
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6 flex items-center gap-3">
+              <ShieldAlert className="w-4 h-4 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
@@ -96,6 +143,7 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                   className="input-field pl-10"
                   required
+                  disabled={isLockedOut}
                 />
               </div>
             </div>
@@ -116,6 +164,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   className="input-field pl-10 pr-10"
                   required
+                  disabled={isLockedOut}
                 />
                 <button
                   type="button"
@@ -129,10 +178,12 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isLockedOut}
               className="btn-primary w-full py-3.5 text-base"
             >
-              {isLoading ? (
+              {isLockedOut ? (
+                <span className="tabular-nums">Bloqueado ({lockoutRemaining}s)</span>
+              ) : isLoading ? (
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>{t('auth.signIn')} <ArrowRight className="w-4 h-4" /></>
@@ -148,7 +199,7 @@ export default function LoginPage() {
           </div>
 
           {/* Social Login — Google only */}
-          <button 
+          <button
             type="button"
             onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-olive-200 rounded-xl text-sm font-medium text-olive-800 hover:bg-olive-50 transition-colors"

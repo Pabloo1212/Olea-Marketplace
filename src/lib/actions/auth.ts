@@ -11,7 +11,8 @@ export async function signIn(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: error.message };
+    // Generic error — never reveal whether email exists or password is wrong
+    return { error: 'Email o contraseña incorrectos.' };
   }
 
   redirect('/');
@@ -33,7 +34,8 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    // Generic error — never reveal if email is already registered
+    return { error: 'No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.' };
   }
 
   // Create profile
@@ -65,7 +67,7 @@ export async function signInWithGoogle() {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: 'No se pudo iniciar sesión con Google.' };
   }
 
   if (data.url) {
@@ -82,7 +84,8 @@ export async function resetPassword(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    // Generic — don't reveal if email exists
+    return { error: 'No se pudo enviar el correo. Inténtalo de nuevo.' };
   }
 
   return { success: true };

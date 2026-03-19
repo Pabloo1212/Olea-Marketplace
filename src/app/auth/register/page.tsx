@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useTranslation } from '@/stores/i18nStore';
 import { Eye, EyeOff, Mail, Lock, User, Building2, ArrowRight, Check, MailCheck } from 'lucide-react';
+import PasswordStrength, { isPasswordValid } from '@/components/auth/PasswordStrength';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -19,6 +20,9 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const canSubmitStep1 = name && email && password && isPasswordValid(password) && acceptedTerms;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,12 +30,23 @@ export default function RegisterPage() {
       setStep(2);
       return;
     }
+
+    if (!acceptedTerms) {
+      setError('Debes aceptar los Términos y la Política de Privacidad.');
+      return;
+    }
+
+    if (!isPasswordValid(password)) {
+      setError('La contraseña no cumple los requisitos mínimos de seguridad.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 
     try {
       const supabase = createClient();
-      
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -45,13 +60,18 @@ export default function RegisterPage() {
           }
         }
       });
-      
-      if (error) throw error;
-      
+
+      if (error) {
+        // Generic error — never reveal if email already exists
+        setError('No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.');
+        setIsLoading(false);
+        return;
+      }
+
       // Show verification message instead of redirecting
       setSignupSuccess(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to create account');
+      setError('Ha ocurrido un error inesperado. Inténtalo de nuevo.');
       setIsLoading(false);
     }
   };
@@ -67,7 +87,7 @@ export default function RegisterPage() {
       });
       if (error) throw error;
     } catch (err: any) {
-      setError(err.message || 'Failed to initialize Google signup');
+      setError('No se pudo iniciar sesión con Google.');
     }
   };
 
@@ -200,13 +220,36 @@ export default function RegisterPage() {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                  {/* Password strength indicator */}
+                  <PasswordStrength password={password} className="mt-3" />
                 </div>
 
-                <button type="submit" disabled={isLoading} className="btn-primary w-full py-3.5 text-base">
+                {/* Terms of Service */}
+                <label className="flex items-start gap-3 cursor-pointer py-2">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 rounded border-olive-300 text-olive-600 focus:ring-olive-500"
+                  />
+                  <span className="text-xs text-olive-600 leading-relaxed">
+                    Acepto los{' '}
+                    <Link href="/terms" className="text-olive-800 font-semibold underline hover:text-olive-900">
+                      Términos de Servicio
+                    </Link>{' '}
+                    y la{' '}
+                    <Link href="/privacy" className="text-olive-800 font-semibold underline hover:text-olive-900">
+                      Política de Privacidad
+                    </Link>
+                    .
+                  </span>
+                </label>
+
+                <button type="submit" disabled={isLoading || (role === 'customer' && !canSubmitStep1)} className="btn-primary w-full py-3.5 text-base disabled:opacity-50 disabled:cursor-not-allowed">
                   {isLoading ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <>{t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
+                    <>{role === 'producer' ? 'Siguiente' : t('auth.signUp')} <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </form>
