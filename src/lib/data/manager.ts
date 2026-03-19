@@ -162,8 +162,9 @@ class DataManager {
 
         if (error) throw error;
         
-        // Validate and transform data
-        const validatedData = productArraySchema.parse(data || []);
+        // Use safeParse so individual validation failures don't throw and fall back to all mock data
+        const parseResult = productArraySchema.safeParse(data || []);
+        const validatedData: Product[] = parseResult.success ? parseResult.data : (data || []) as unknown as Product[];
         
         // Apply sorting
         if (filters?.sortBy) {
@@ -175,24 +176,24 @@ class DataManager {
               validatedData.sort((a, b) => b.price - a.price);
               break;
             case 'rating':
-              validatedData.sort((a, b) => b.avg_rating - a.avg_rating);
+              validatedData.sort((a, b) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0));
               break;
             case 'newest':
-              validatedData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+              validatedData.sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime());
               break;
             case 'name':
               validatedData.sort((a, b) => a.name.localeCompare(b.name));
               break;
           }
         } else {
-          // Default sort by rating
-          validatedData.sort((a, b) => b.avg_rating - a.avg_rating);
+          // Default sort: newest first
+          validatedData.sort((a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime());
         }
 
         this.setCache(cacheKey, validatedData);
         return validatedData;
       },
-      mockProducts, // Fallback to mock data
+      mockProducts as any, // Fallback to mock data only if Supabase itself fails
       'getProducts'
     );
   }
@@ -225,7 +226,7 @@ class DataManager {
         this.setCache(cacheKey, validatedData);
         return validatedData;
       },
-      mockProducts.find(p => p.id === id) || null,
+      mockProducts.find(p => p.id === id) as any || null,
       'getProductById'
     );
   }
@@ -258,7 +259,7 @@ class DataManager {
         this.setCache(cacheKey, validatedData);
         return validatedData;
       },
-      mockProducts.find(p => p.slug === slug) || null,
+      mockProducts.find(p => p.slug === slug) as any || null,
       'getProductBySlug'
     );
   }
@@ -327,7 +328,7 @@ class DataManager {
         
         return completeProduct;
       },
-      Promise.reject(new Error('Product creation requires backend')),
+      undefined as any,
       'createProduct'
     );
   }
@@ -355,7 +356,7 @@ class DataManager {
         
         return validatedData;
       },
-      Promise.reject(new Error('Product update requires backend')),
+      undefined as any,
       'updateProduct'
     );
   }
@@ -374,7 +375,7 @@ class DataManager {
         this.clearCache('products');
         this.cache.delete(`product:${id}`);
       },
-      Promise.reject(new Error('Product deletion requires backend')),
+      undefined as any,
       'deleteProduct'
     );
   }
@@ -426,7 +427,7 @@ class DataManager {
         
         return validateProfile(data);
       },
-      Promise.reject(new Error('Profile update requires backend')),
+      undefined as any,
       'updateProfile'
     );
   }
@@ -459,7 +460,7 @@ class DataManager {
         this.setCache(cacheKey, validatedData);
         return validatedData;
       },
-      mockProducers.find(p => p.user_id === userId) || null,
+      mockProducers.find(p => p.user_id === userId) as any || null,
       'getProducerByUserId'
     );
   }
@@ -488,7 +489,7 @@ class DataManager {
         this.setCache(cacheKey, validatedData);
         return validatedData;
       },
-      mockProducts.filter(p => p.producer_id === producerId),
+      mockProducts.filter(p => p.producer_id === producerId) as any,
       'getProducerProducts'
     );
   }

@@ -43,36 +43,47 @@ const newProductImageSchema = z.object({
 
 // Core entity schemas
 export const productSchema = z.object({
-  id: uuidSchema,
-  producer_id: uuidSchema,
+  id: z.string(),
+  producer_id: z.string(),
   name: z.string().min(1, 'Product name is required').max(200, 'Product name cannot exceed 200 characters'),
-  description: z.string().max(2000, 'Description cannot exceed 2000 characters').optional(),
-  short_description: z.string().min(1, 'Short description is required').max(150, 'Short description cannot exceed 150 characters'),
-  price: priceSchema,
-  compare_at_price: priceSchema.optional().nullable(),
-  currency: currencySchema,
-  stock: z.number().int().min(0, 'Stock cannot be negative'),
-  olive_variety: oliveVarietySchema,
-  harvest_year: yearSchema,
-  origin_region: z.string().max(100, 'Region name cannot exceed 100 characters').optional(),
-  origin_country: countrySchema,
-  organic: organicSchema,
-  intensity: intensitySchema,
-  volume_ml: z.number().int().min(250, 'Volume must be at least 250ml').max(5000, 'Volume cannot exceed 5000ml'),
-  is_published: z.boolean(),
-  avg_rating: ratingSchema.optional(),
-  review_count: z.number().int().min(0, 'Review count cannot be negative').optional(),
-  slug: z.string().min(1, 'Slug is required').max(200, 'Slug cannot exceed 200 characters'),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-  images: z.array(productImageSchema).optional(),
-  // Optional extended fields (may exist in DB but not always returned)
+  description: z.string().max(5000).optional().nullable().default(''),
+  short_description: z.string().max(300).optional().nullable().default(''),
+  price: z.number().min(0, 'Price must be positive').max(100000),
+  compare_at_price: z.number().optional().nullable(),
+  currency: z.string().default('EUR'),
+  stock: z.number().int().min(0, 'Stock cannot be negative').default(0),
+  // Accept any string for these — producers can enter freely
+  olive_variety: z.string().default(''),
+  harvest_year: z.number().int().optional().nullable(),
+  origin_region: z.string().optional().nullable().default(''),
+  origin_country: z.string().default(''),
+  organic: z.boolean().default(false),
+  intensity: z.string().optional().nullable().default('medium'),
+  volume_ml: z.number().int().min(1).optional().nullable().default(500),
+  is_published: z.boolean().default(false),
+  avg_rating: z.number().min(0).max(5).optional().nullable().default(0),
+  review_count: z.number().int().min(0).optional().nullable().default(0),
+  slug: z.string().optional().nullable().default(''),
+  created_at: z.string().optional().nullable().default(new Date().toISOString()),
+  updated_at: z.string().optional().nullable().default(new Date().toISOString()),
+  images: z.array(z.object({
+    id: z.string().optional(),
+    product_id: z.string().optional(),
+    image_url: z.string(),
+    alt_text: z.string().optional().nullable(),
+    position: z.number().optional().nullable(),
+  })).optional().nullable().default([]),
+  // Optional extended fields
   region: z.string().optional(),
   tasting_notes: z.string().optional(),
   storage_instructions: z.string().optional(),
-});
+  // Allow extra fields from joins (producer, reviews)
+  producer: z.any().optional(),
+  reviews: z.any().optional(),
+}).passthrough(); // allow extra fields without error
 
 export const productArraySchema = z.array(productSchema);
+
 
 export const newProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200, 'Product name cannot exceed 200 characters'),
